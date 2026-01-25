@@ -1,0 +1,240 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, Arial, sans-serif; }
+
+.hero {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* The slideshow layer */
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  transition: opacity 900ms ease;
+  opacity: 1;
+}
+
+/* Your fog overlay stays above the background */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+
+.content {
+  position: relative;
+  text-align: center;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+}
+
+.accent { color: #2563eb; }
+
+.icons {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  backdrop-filter: blur(10px);
+
+  color: rgba(15, 23, 42, 0.9);
+
+  transition: all 160ms ease;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(15, 23, 42, 0.25);
+}
+
+.icon-btn:active {
+  transform: scale(0.97);
+}
+
+.icon-img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 800;
+  animation: blink 0.9s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ===== Navbar + Sections ===== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+
+  background: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.nav-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 12px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-weight: 800;
+  text-decoration: none;
+  color: rgba(15, 23, 42, 0.95);
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: rgba(15, 23, 42, 0.85);
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 12px;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.nav-links a:hover {
+  background: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+/* make sure the hero content isn't hidden behind the fixed nav */
+.hero {
+  padding-top: 70px;
+}
+
+/* anchor jump offset so clicking About/Projects/Contact looks right */
+.section {
+  scroll-margin-top: 90px;
+}
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+/* sections styling */
+.section {
+  padding: 90px 0;
+  background: #ffffff;
+}
+
+.section:nth-of-type(even) {
+  background: rgba(248, 250, 252, 1); /* subtle alternating bg */
+}
+
+.section h2 {
+  font-size: 1.7rem;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  color: rgba(15, 23, 42, 0.95);
+}
+
+.section p,
+.section a {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(15, 23, 42, 0.85);
+}
+
+.section a {
+  font-weight: 700;
+}
+
+/* project cards */
+.cards {
+  margin-top: 22px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.10);
+}
+
+.card h3 {
+  margin-bottom: 8px;
+  font-size: 1.08rem;
+  color: rgba(15, 23, 42, 0.95);
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.98rem;
+  color: rgba(15, 23, 42, 0.80);
+}
+
+/* mobile: hide nav links if they get cramped */
+@media (max-width: 520px) {
+  .nav-links {
+    gap: 6px;
+  }
+  .nav-links a {
+    padding: 7px 8px;
+    font-size: 0.95rem;
+  }
+}

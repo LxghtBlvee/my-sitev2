@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LxghtBlvee</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- NAVBAR (must be inside body, above the hero) -->
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="#top">LxghtBlvee</a>
+
+        <nav class="nav-links">
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <main class="hero" id="top">
+      <div class="bg" id="bg"></div>
+      <div class="overlay"></div>
+
+      <div class="content">
+        <h1>
+          Hiya, I'm
+          <span class="accent" id="type-target"></span><span class="cursor">|</span>
+        </h1>
+
+        <div class="icons">
+          <!-- Roblox -->
+          <a
+            class="icon-btn"
+            href="https://www.roblox.com/users/9519944913/profile"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Roblox"
+          >
+            <img src="assets/roblox.svg" alt="Roblox" class="icon-img" />
+          </a>
+
+          <!-- GitHub -->
+          <a
+            class="icon-btn"
+            href="https://github.com/LxghtBlvee"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+          >
+            <img src="assets/github.svg" alt="GitHub" class="icon-img" />
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+      <div class="wrap">
+        <h2>About Me</h2>
+        <p>
+          I’m LxghtBlvee — a developer focused on Discord automation, moderation tooling,
+          and systems that connect communities with Roblox experiences.
+        </p>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="section" id="projects">
+      <div class="wrap">
+        <h2>Projects</h2>
+
+        <div class="cards">
+          <article class="card">
+            <h3>Helix Bot Contributions</h3>
+            <p>Worked on intel history + permission/interaction flow improvements.</p>
+          </article>
+
+          <article class="card">
+            <h3>Infraction History Enhancements</h3>
+            <p>Extended record history to include linked accounts/alts cleanly.</p>
+          </article>
+
+          <article class="card">
+            <h3>Verification & Permissions</h3>
+            <p>Improved authorization UX and command behavior for reliability.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section" id="contact">
+      <div class="wrap">
+        <h2>Contact</h2>
+        <p>
+          Find me on
+          <a href="https://github.com/LxghtBlvee" target="_blank" rel="noopener noreferrer">GitHub</a>
+          and
+          <a href="https://www.roblox.com/users/9519944913/profile" target="_blank" rel="noopener noreferrer">Roblox</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- SCRIPTS -->
+    <script>
+      // --- Typewriter ---
+      const target = document.getElementById("type-target");
+      const names = ["LxghtBlvee", "Intel_RookieAlt"];
+      let nameIndex = 0;
+
+      const typeSpeed = 150;
+      const deleteSpeed = 95;
+      const holdTime = 4000;
+      const pauseBetween = 600;
+
+      function typeText(text, i = 0) {
+        if (i <= text.length) {
+          target.textContent = text.slice(0, i);
+          setTimeout(() => typeText(text, i + 1), typeSpeed);
+        } else {
+          setTimeout(() => deleteText(text, text.length), holdTime);
+        }
+      }
+
+      function deleteText(text, i) {
+        if (i >= 0) {
+          target.textContent = text.slice(0, i);
+          setTimeout(() => deleteText(text, i - 1), deleteSpeed);
+        } else {
+          nameIndex = (nameIndex + 1) % names.length;
+          setTimeout(() => typeText(names[nameIndex], 0), pauseBetween);
+        }
+      }
+
+      typeText(names[nameIndex], 0);
+
+      // --- Background slideshow ---
+      const bg = document.getElementById("bg");
+      const slides = [
+        "assets/mountains.jpg",
+        "assets/mountains2.jpg",
+        "assets/mountains3.jpg",
+        "assets/mountains4.jpg",
+      ];
+
+      let slideIndex = 0;
+      const slideEveryMs = 5000;
+
+      bg.style.backgroundImage = `url("${slides[slideIndex]}")`;
+
+      function nextSlide() {
+        bg.style.opacity = "0";
+        setTimeout(() => {
+          slideIndex = (slideIndex + 1) % slides.length;
+          bg.style.backgroundImage = `url("${slides[slideIndex]}")`;
+          bg.style.opacity = "1";
+        }, 900);
+      }
+
+      setInterval(nextSlide, slideEveryMs);
+    </script>
+  </body>
+</html>
