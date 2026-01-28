@@ -17,6 +17,9 @@
           <a href="#about">About</a>
           <a href="#projects">Projects</a>
           <a href="#contact">Contact</a>
+          <a href="#music">Music</a>
+
+
         </nav>
       </div>
     </header>
@@ -93,6 +96,33 @@
       </div>
     </section>
 
+<section class="section" id="music">
+  <div class="wrap">
+    <h2>Now Listening</h2>
+
+    <div class="now-card" id="now-card">
+      <div class="now-art" id="now-art"></div>
+
+      <div class="now-meta">
+        <div class="now-title" id="now-title">Loading…</div>
+        <div class="now-artist" id="now-artist"></div>
+      </div>
+
+      <a
+        class="now-link"
+        id="now-link"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Open on Last.fm"
+      >
+        ↗
+      </a>
+    </div>
+  </div>
+</section>
+
+
     <!-- CONTACT -->
     <section class="section" id="contact">
       <div class="wrap">
@@ -138,6 +168,37 @@
       }
 
       typeText(names[nameIndex], 0);
+
+      const NOW_PLAYING_URL =
+  "https://lxghtblvee-now-playinga.dickeydamian.workers.dev/";
+
+async function updateNowPlaying() {
+  try {
+    const res = await fetch(NOW_PLAYING_URL, { cache: "no-store" });
+    const song = await res.json();
+
+    const art = document.getElementById("now-art");
+    const title = document.getElementById("now-title");
+    const artist = document.getElementById("now-artist");
+    const link = document.getElementById("now-link");
+
+    title.textContent = song?.title || "Nothing playing";
+    artist.textContent = song?.artist || "";
+    link.href = song?.url || "https://www.last.fm/user/LxghtBlvee";
+
+    if (song?.albumArt) {
+      art.style.backgroundImage = `url("${song.albumArt}")`;
+    } else {
+      art.style.backgroundImage = "none";
+    }
+  } catch (e) {
+    // fail quietly
+  }
+}
+
+updateNowPlaying();
+setInterval(updateNowPlaying, 15000);
+
 
       // --- Background slideshow ---
       const bg = document.getElementById("bg");
