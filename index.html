@@ -18,8 +18,6 @@
           <a href="#projects">Projects</a>
           <a href="#contact">Contact</a>
           <a href="#music">Music</a>
-
-
         </nav>
       </div>
     </header>
@@ -96,32 +94,37 @@
       </div>
     </section>
 
-<section class="section" id="music">
-  <div class="wrap">
-    <h2>Now Listening</h2>
+    <!-- MUSIC -->
+    <section class="section" id="music">
+      <div class="wrap">
+        <h2>Now Listening</h2>
 
-    <div class="now-card" id="now-card">
-      <div class="now-art" id="now-art"></div>
+        <div class="now-card" id="now-card">
+          <div class="now-art" id="now-art"></div>
 
-      <div class="now-meta">
-        <div class="now-title" id="now-title">Loading…</div>
-        <div class="now-artist" id="now-artist"></div>
+          <div class="now-meta">
+            <!-- Badge (only shows when nowPlaying === true) -->
+            <div class="now-badge" id="now-badge" hidden>
+              <span class="dot"></span> Listening now
+            </div>
+
+            <div class="now-title" id="now-title">Loading…</div>
+            <div class="now-artist" id="now-artist"></div>
+          </div>
+
+          <a
+            class="now-link"
+            id="now-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open on Last.fm"
+          >
+            ↗
+          </a>
+        </div>
       </div>
-
-      <a
-        class="now-link"
-        id="now-link"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Open on Last.fm"
-      >
-        ↗
-      </a>
-    </div>
-  </div>
-</section>
-
+    </section>
 
     <!-- CONTACT -->
     <section class="section" id="contact">
@@ -169,36 +172,55 @@
 
       typeText(names[nameIndex], 0);
 
+      // --- Now Playing (Last.fm via your Cloudflare Worker) ---
       const NOW_PLAYING_URL =
-  "https://lxghtblvee-now-playinga.dickeydamian.workers.dev/";
+        "https://lxghtblvee-now-playinga.dickeydamian.workers.dev/";
 
-async function updateNowPlaying() {
-  try {
-    const res = await fetch(NOW_PLAYING_URL, { cache: "no-store" });
-    const song = await res.json();
+      let lastSignature = ""; // prevents pointless DOM updates
 
-    const art = document.getElementById("now-art");
-    const title = document.getElementById("now-title");
-    const artist = document.getElementById("now-artist");
-    const link = document.getElementById("now-link");
+      async function updateNowPlaying(force = false) {
+        try {
+          const res = await fetch(NOW_PLAYING_URL, { cache: "no-store" });
+          const song = await res.json();
 
-    title.textContent = song?.title || "Nothing playing";
-    artist.textContent = song?.artist || "";
-    link.href = song?.url || "https://www.last.fm/user/LxghtBlvee";
+          const signature = `${song?.nowPlaying}|${song?.title}|${song?.artist}|${song?.albumArt}|${song?.url}`;
+          if (!force && signature === lastSignature) return;
+          lastSignature = signature;
 
-    if (song?.albumArt) {
-      art.style.backgroundImage = `url("${song.albumArt}")`;
-    } else {
-      art.style.backgroundImage = "none";
-    }
-  } catch (e) {
-    // fail quietly
-  }
-}
+          const art = document.getElementById("now-art");
+          const title = document.getElementById("now-title");
+          const artist = document.getElementById("now-artist");
+          const link = document.getElementById("now-link");
+          const badge = document.getElementById("now-badge");
 
-updateNowPlaying();
-setInterval(updateNowPlaying, 15000);
+          // badge toggle
+          badge.hidden = !song?.nowPlaying;
 
+          // "Last played" behavior
+          const baseTitle = song?.title || "Nothing playing";
+          title.textContent = song?.nowPlaying ? baseTitle : `Last played: ${baseTitle}`;
+
+          artist.textContent = song?.artist || "";
+          link.href = song?.url || "https://www.last.fm/user/LxghtBlvee";
+
+          if (song?.albumArt) {
+            art.style.backgroundImage = `url("${song.albumArt}")`;
+          } else {
+            art.style.backgroundImage = "none";
+          }
+        } catch (e) {
+          // fail quietly
+        }
+      }
+
+      // initial load
+      updateNowPlaying(true);
+
+      // "feels live": poll more often + refresh when tab becomes visible again
+      setInterval(updateNowPlaying, 5000); // every 5s (Last.fm still may update slower)
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) updateNowPlaying(true);
+      });
 
       // --- Background slideshow ---
       const bg = document.getElementById("bg");
