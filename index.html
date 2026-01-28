@@ -8,7 +8,7 @@
   </head>
 
   <body>
-    <!-- NAVBAR (must be inside body, above the hero) -->
+
     <header class="nav">
       <div class="nav-inner">
         <a class="brand" href="#top">LxghtBlvee</a>
@@ -22,7 +22,7 @@
       </div>
     </header>
 
-    <!-- HERO -->
+
     <main class="hero" id="top">
       <div class="bg" id="bg"></div>
       <div class="overlay"></div>
@@ -34,7 +34,7 @@
         </h1>
 
         <div class="icons">
-          <!-- Roblox -->
+
           <a
             class="icon-btn"
             href="https://www.roblox.com/users/9519944913/profile"
@@ -45,7 +45,7 @@
             <img src="assets/roblox.svg" alt="Roblox" class="icon-img" />
           </a>
 
-          <!-- GitHub -->
+
           <a
             class="icon-btn"
             href="https://github.com/LxghtBlvee"
@@ -59,7 +59,7 @@
       </div>
     </main>
 
-    <!-- ABOUT -->
+
     <section class="section" id="about">
       <div class="wrap">
         <h2>About Me</h2>
@@ -70,7 +70,7 @@
       </div>
     </section>
 
-    <!-- PROJECTS -->
+->
     <section class="section" id="projects">
       <div class="wrap">
         <h2>Projects</h2>
@@ -94,7 +94,6 @@
       </div>
     </section>
 
-    <!-- MUSIC -->
     <section class="section" id="music">
       <div class="wrap">
         <h2>Now Listening</h2>
@@ -103,7 +102,6 @@
           <div class="now-art" id="now-art"></div>
 
           <div class="now-meta">
-            <!-- Badge (only shows when nowPlaying === true) -->
             <div class="now-badge" id="now-badge" hidden>
               <span class="dot"></span> Listening now
             </div>
@@ -126,7 +124,6 @@
       </div>
     </section>
 
-    <!-- CONTACT -->
     <section class="section" id="contact">
       <div class="wrap">
         <h2>Contact</h2>
@@ -139,9 +136,8 @@
       </div>
     </section>
 
-    <!-- SCRIPTS -->
     <script>
-      // --- Typewriter ---
+
       const target = document.getElementById("type-target");
       const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
       let nameIndex = 0;
@@ -172,11 +168,10 @@
 
       typeText(names[nameIndex], 0);
 
-      // --- Now Playing (Last.fm via your Cloudflare Worker) ---
       const NOW_PLAYING_URL =
         "https://lxghtblvee-now-playinga.dickeydamian.workers.dev/";
 
-      let lastSignature = ""; // prevents pointless DOM updates
+      let lastSignature = ""; 
 
       async function updateNowPlaying(force = false) {
         try {
@@ -193,10 +188,8 @@
           const link = document.getElementById("now-link");
           const badge = document.getElementById("now-badge");
 
-          // badge toggle
           badge.hidden = !song?.nowPlaying;
 
-          // "Last played" behavior
           const baseTitle = song?.title || "Nothing playing";
           title.textContent = song?.nowPlaying ? baseTitle : `Last played: ${baseTitle}`;
 
@@ -213,16 +206,13 @@
         }
       }
 
-      // initial load
       updateNowPlaying(true);
 
-      // "feels live": poll more often + refresh when tab becomes visible again
-      setInterval(updateNowPlaying, 5000); // every 5s (Last.fm still may update slower)
+      setInterval(updateNowPlaying, 5000); 
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) updateNowPlaying(true);
       });
 
-      // --- Background slideshow ---
       const bg = document.getElementById("bg");
       const slides = [
         "assets/mountains.jpg",
