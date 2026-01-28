@@ -78,12 +78,12 @@
         <div class="cards">
           <article class="card">
             <h3>Helix Bot Contributions</h3>
-            <p>Worked on infraction history + interaction flow improvements.</p>
+            <p>General Commands + interaction flow improvements.</p>
           </article>
 
           <article class="card">
             <h3>Echelon Bot Contributions</h3>
-            <p>Developed backend Node.js service client</p>
+            <p>Developed a backend Node.js service client</p>
           </article>
 
           <article class="card">
@@ -188,10 +188,15 @@
           const link = document.getElementById("now-link");
           const badge = document.getElementById("now-badge");
 
-          badge.hidden = !song?.nowPlaying;
+          const isNow = song?.nowPlaying === true || song?.nowPlaying === "true";
 
-          const baseTitle = song?.title || "Nothing playing";
-          title.textContent = song?.nowPlaying ? baseTitle : `Last played: ${baseTitle}`;
+          // badge toggle
+          badge.hidden = !isNow;
+
+          // title text
+         const baseTitle = song?.title || "Nothing playing";
+title.textContent = isNow ? baseTitle : `Last played: ${baseTitle}`;
+
 
           artist.textContent = song?.artist || "";
           link.href = song?.url || "https://www.last.fm/user/LxghtBlvee";
