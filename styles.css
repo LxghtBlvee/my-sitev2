@@ -18,7 +18,7 @@ body { font-family: system-ui, Arial, sans-serif; }
   background-repeat: no-repeat;
   transform: scale(1.);
   filter: saturate(1.05) contrast(1.02);
-  transition: opacity 900ms ease;
+  transition: 1;
   opacity: 1;
   will-change: transform, opacity;
 }
