@@ -283,29 +283,10 @@
         themeBtn.textContent = isDark ? "☀️" : "🌙";
       });
 
-      // --- Background slideshow + parallax ---
-      const bg = document.getElementById("bg");
-      const slides = [
-        "assets/mountains.jpg",
-        "assets/mountains2.jpg",
-        "assets/mountains3.jpg",
-        "assets/mountains4.jpg",
-      ];
+      // --- Static Background ---
+const bg = document.getElementById("bg");
+bg.style.backgroundImage = `url("assets/city.webp")`;
 
-      let slideIndex = 0;
-      const slideEveryMs = 5000;
-
-      bg.style.backgroundImage = `url("${slides[slideIndex]}")`;
-
-      function nextSlide() {
-        bg.style.opacity = "0";
-        setTimeout(() => {
-          slideIndex = (slideIndex + 1) % slides.length;
-          bg.style.backgroundImage = `url("${slides[slideIndex]}")`;
-          bg.style.opacity = "1";
-        }, 900);
-      }
-      setInterval(nextSlide, slideEveryMs);
 
       window.addEventListener("mousemove", (e) => {
         const hero = document.querySelector(".hero");
