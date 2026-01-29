@@ -8,7 +8,6 @@
   </head>
 
   <body>
-   
     <button class="theme-fab" id="theme-btn" aria-label="Toggle theme">🌙</button>
 
     <!-- NAV -->
@@ -60,7 +59,6 @@
         </div>
       </div>
     </main>
-
 
     <span class="presence" id="presence" aria-label="Presence status" title="Offline">●</span>
 
@@ -169,7 +167,7 @@
       <div class="wrap">
         <h2>Activity</h2>
 
-  
+        <!-- Skeletons -->
         <div class="activity-list" id="activity-skeleton">
           <div class="activity-item skeleton"></div>
           <div class="activity-item skeleton"></div>
@@ -178,11 +176,12 @@
 
         <div class="activity-error" id="activity-error" hidden></div>
 
+        <!-- Real list -->
         <div class="activity-list" id="activity-list" hidden></div>
       </div>
     </section>
 
-    <!-- CONTACT -->
+    <!-- CONTACT --->
     <section class="section" id="contact">
       <div class="wrap">
         <h2>Contact</h2>
@@ -196,9 +195,7 @@
     </section>
 
     <script>
-
-      // Typewriter
-
+      //  Typewriter 
       const target = document.getElementById("type-target");
       const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
       let nameIndex = 0;
@@ -229,10 +226,8 @@
 
       typeText(names[nameIndex], 0);
 
-
-      // API (Feed)
+      //  API (Feed) 
       const FEED_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/feed";
-
       let lastFeedSig = "";
 
       function escapeHtml(s) {
@@ -247,7 +242,6 @@
 
       function safeCssUrl(url) {
         if (!url) return "";
-        // basic safety: only allow http(s)
         if (!/^https?:\/\//i.test(url)) return "";
         return url;
       }
@@ -268,46 +262,6 @@
             : (state === "online" ? "Online" : "Offline");
       }
 
-      function renderActivity(items) {
-        const list = document.getElementById("activity-list");
-        if (!list) return;
-
-        list.innerHTML = "";
-
-        for (const it of items.slice(0, 6)) {
-          const a = document.createElement("a");
-          a.className = "activity-item";
-          a.href = it.url || "#";
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
-
-          const img = safeCssUrl(it.image);
-
-          a.innerHTML = `
-            <div class="activity-left">
-              <div class="activity-img" ${img ? `style="background-image:url('${img}')"` : ""}></div>
-              <div class="activity-text">
-                <div class="activity-title">${escapeHtml(it.title || "")}</div>
-                <div class="activity-sub">${escapeHtml(it.subtitle || "")}</div>
-              </div>
-            </div>
-            <div class="activity-arrow">↗</div>
-          `;
-
-          list.appendChild(a);
-        }
-      }
-
-      function renderMusicFromPresence(p) {
-        const art = document.getElementById("now-art");
-        const title = document.getElementById("now-title");
-        const artist = document.getElementById("now-artist");
-        const link = document.getElementById("now-link");
-        const badge = document.getElementById("now-badge");
-        if (!title || !artist || !link || !badge || !art) return;
-
-      }
-
       function renderNowCardFromItems(items) {
         const art = document.getElementById("now-art");
         const title = document.getElementById("now-title");
@@ -316,7 +270,9 @@
         const badge = document.getElementById("now-badge");
         if (!title || !artist || !link || !badge || !art) return;
 
-        const musicItem = items.find((x) => x.type === "music_now") || items.find((x) => x.type === "music_last");
+        const musicItem =
+          items.find((x) => x.type === "music_now") ||
+          items.find((x) => x.type === "music_last");
 
         if (!musicItem) {
           badge.hidden = true;
@@ -328,16 +284,50 @@
         }
 
         const isNow = musicItem.type === "music_now";
-
         badge.hidden = !isNow;
 
-        title.textContent = isNow ? (musicItem.title || "Listening…") : (musicItem.title || "Last played");
+        title.textContent = musicItem.title || (isNow ? "Listening…" : "Last played");
         artist.textContent = musicItem.subtitle || "";
 
         link.href = musicItem.url || "https://www.last.fm/user/LxghtBlvee";
 
         const img = safeCssUrl(musicItem.image);
         art.style.backgroundImage = img ? `url("${img}")` : "none";
+      }
+
+      function renderActivity(items) {
+        const list = document.getElementById("activity-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        if (!items.length) {
+          list.innerHTML = `<p style="opacity:.7">No recent activity.</p>`;
+          return;
+        }
+
+        for (const it of items.slice(0, 6)) {
+          const a = document.createElement("a");
+          a.className = "activity-item";
+          a.href = it.url || "#";
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+
+          const img = it.image || "assets/github.svg";
+
+          a.innerHTML = `
+            <div class="activity-left">
+              <div class="activity-img" style="background-image:url('${img}')"></div>
+              <div class="activity-text">
+                <div class="activity-title">${escapeHtml(it.title || "")}</div>
+                <div class="activity-sub">${escapeHtml(it.subtitle || "")}</div>
+              </div>
+            </div>
+            <div class="activity-arrow">↗</div>
+          `;
+
+          list.appendChild(a);
+        }
       }
 
       async function updateFeed(force = false) {
@@ -351,21 +341,25 @@
           const data = await res.json();
 
           const items = Array.isArray(data?.items) ? data.items : [];
-          const sig = JSON.stringify(items.map(i => [i.type, i.title, i.subtitle, i.url, i.image, i.ts]));
 
+          // only GitHub in Activity 
+          const activityItems = items.filter((it) => it.type === "github");
+
+          const sig = JSON.stringify(
+            items.map((i) => [i.type, i.title, i.subtitle, i.url, i.image, i.ts])
+          );
           if (!force && sig === lastFeedSig) return;
           lastFeedSig = sig;
 
           renderPresence(data?.presence);
           renderNowCardFromItems(items);
-          renderActivity(items);
+          renderActivity(activityItems);
 
-          // show content only on success
+          // show list after success
           if (skel) skel.hidden = true;
           if (list) list.hidden = false;
           if (err) err.hidden = true;
         } catch (e) {
-          // keep skeleton if first load fails
           if (err) {
             err.hidden = false;
             err.textContent = "Couldn't load activity right now.";
@@ -375,14 +369,11 @@
 
       updateFeed(true);
       setInterval(() => updateFeed(false), 5000);
-
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) updateFeed(true);
       });
 
-
-      // Active nav link highlight
-
+      //  Active nav link highlight 
       const sectionIds = ["about", "projects", "music", "activity", "contact"];
       const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
 
@@ -407,8 +398,7 @@
         if (el) observer.observe(el);
       });
 
-      // Theme toggle
-
+      //  Theme toggle 
       const themeBtn = document.getElementById("theme-btn");
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") document.body.classList.add("dark");
@@ -421,9 +411,7 @@
         themeBtn.textContent = isDark ? "☀️" : "🌙";
       });
 
-
-      // Static Background + parallax
-
+      //  Static Background + parallax 
       const bg = document.getElementById("bg");
       bg.style.backgroundImage = `url("assets/city.webp")`;
 
