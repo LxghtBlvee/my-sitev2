@@ -1,0 +1,26 @@
+name: Live Status
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  set_status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set status to coding
+        run: |
+          curl -sS -X POST "${{ secrets.STATUS_API_URL }}/api/discord/status/update" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.STATUS_ADMIN_TOKEN }}" \
+            -d "{\"state\":\"coding\",\"workingOn\":\"${{ github.repository }} @ ${GITHUB_REF_NAME}\"}"
+
+      # Optional: if this same workflow also deploys your site,
+      # you can set it to idle at the end.
+      - name: Set status to idle
+        if: always()
+        run: |
+          curl -sS -X POST "${{ secrets.STATUS_API_URL }}/api/discord/status/update" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.STATUS_ADMIN_TOKEN }}" \
+            -d "{\"state\":\"idle\",\"workingOn\":\"${{ github.repository }}\"}"
