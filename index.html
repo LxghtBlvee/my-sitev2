@@ -326,11 +326,15 @@
       return;
     }
 
+    
+
     // reset if track changed
     if (trackKey && trackKey !== progressTrackKey) {
       progressTrackKey = trackKey;
       progressStartMs = Date.now();
     }
+
+    
 
     progressDurationMs = durationMs;
     prog.hidden = false;
@@ -454,6 +458,37 @@
     }
   }
 
+  async function debugLastfm(env) {
+  const apiKey = env.LASTFM_API_KEY;
+  const username = env.LASTFM_USER || "LxghtBlvee";
+
+  if (!apiKey) {
+    return { ok: false, reason: "MISSING_LASTFM_API_KEY" };
+  }
+
+  const recentUrl =
+    `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks` +
+    `&user=${encodeURIComponent(username)}` +
+    `&api_key=${encodeURIComponent(apiKey)}` +
+    `&format=json&limit=1`;
+
+  const res = await fetch(recentUrl);
+  const text = await res.text();
+
+  if (path === "/debug/lastfm") {
+  return json(await debugLastfm(env), 200, 0);
+}
+
+
+  return {
+    ok: res.ok,
+    status: res.status,
+    username,
+    sample: text.slice(0, 500),
+  };
+}
+
+
   async function updateFeed(force = false) {
     const skel = document.getElementById("activity-skeleton");
     const list = document.getElementById("activity-list");
@@ -549,6 +584,8 @@
     bg.style.transform = `translate(${x * 8}px, ${y * 8}px) scale(1.02)`;
   });
 </script>
+
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3bc7b2227af240d9bf3cc6afec4ee93e"}'></script><!-- End Cloudflare Web Analytics -->
 
   </body>
 </html>
