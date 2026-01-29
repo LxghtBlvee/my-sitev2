@@ -73,8 +73,8 @@
         </p>
 
         <!-- LIVE STATUS -->
-        <div class="now-card" id="live-status-card">
-          <div class="now-art" id="live-status-art"></div>
+        <div class="now-card" id="live-status-card" data-state="offline">
+          <div class="now-art" id="live-status-art" style="background-image:none;"></div>
 
           <div class="now-meta">
             <div class="now-badge" id="live-status-badge">
@@ -105,7 +105,15 @@
           <span class="pill">NestJS</span>
           <span class="pill">Discord.js</span>
           <span class="pill">MongoDB</span>
-          <span class="pill">Roblox APIs</span>
+          <span class="pill">Cloudflare Workers</span>
+          <span class="pill">GitHub</span>
+          <span class="pill">REST APIs</span>
+          <span class="pill">Redis</span>
+          <span class="pill">Docker</span>
+          <span class="pill">OAuth</span>
+          <span class="pill">PostgreSQL</span>
+          <span class="pill">WebSockets</span>
+
         </div>
       </div>
     </section>
@@ -120,12 +128,12 @@
             <div class="card-top">
               <h3>unnamed.games / Pathos III</h3>
               <div class="tags">
-                <span class="tag">Full-Stack</span><span class="tag">Programmer</span>
+                <span class="tag">Programmer</span><span class="tag">Full-Stack</span>
               </div>
             </div>
-            <p>Assisting in development of Helix with general commands.</p>
+            <p>Assisting in development of general commands and improvements for Helix.</p>
             <div class="card-actions">
-              <a class="btn" href="https://discord.gg/pathos" target="_blank" rel="noopener noreferrer">Join Discord</a>
+              <a class="btn" href="https://discord.gg/Pathos" target="_blank" rel="noopener noreferrer">Join Pathos</a>
             </div>
           </article>
 
@@ -204,7 +212,6 @@
       <div class="wrap">
         <h2>Activity</h2>
 
-        <!-- Roblox status card (separate from activity list) -->
         <div class="now-card" id="rbx-card" hidden>
           <div class="now-art" id="rbx-art"></div>
 
@@ -225,7 +232,6 @@
           </a>
         </div>
 
-        <!-- Skeletons -->
         <div class="activity-list" id="activity-skeleton">
           <div class="activity-item skeleton"></div>
           <div class="activity-item skeleton"></div>
@@ -233,8 +239,6 @@
         </div>
 
         <div class="activity-error" id="activity-error" hidden></div>
-
-        <!-- Real list -->
         <div class="activity-list" id="activity-list" hidden></div>
       </div>
     </section>
@@ -253,7 +257,45 @@
     </section>
 
     <script>
-      // ---------------- Small utilities ----------------
+      // Typewriter
+      const target = document.getElementById("type-target");
+      const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
+      let nameIndex = 0;
+
+      const typeSpeed = 150;
+      const deleteSpeed = 95;
+      const holdTime = 4000;
+      const pauseBetween = 600;
+
+      function typeText(text, i = 0) {
+        if (i <= text.length) {
+          target.textContent = text.slice(0, i);
+          setTimeout(() => typeText(text, i + 1), typeSpeed);
+        } else {
+          setTimeout(() => deleteText(text, text.length), holdTime);
+        }
+      }
+
+      function deleteText(text, i) {
+        if (i >= 0) {
+          target.textContent = text.slice(0, i);
+          setTimeout(() => deleteText(text, i - 1), deleteSpeed);
+        } else {
+          nameIndex = (nameIndex + 1) % names.length;
+          setTimeout(() => typeText(names[nameIndex], 0), pauseBetween);
+        }
+      }
+
+      typeText(names[nameIndex], 0);
+
+      // FEED
+      const FEED_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/feed";
+      let lastFeedSig = "";
+
+      // LIVE STATUS
+      const STATUS_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/api/discord/status";
+      const FALLBACK_PHOTO = "https://github.com/LxghtBlvee.png?size=96"; // <- change to your own image if you want
+
       function escapeHtml(s) {
         return String(s).replace(/[&<>"']/g, (c) => ({
           "&": "&amp;",
@@ -270,11 +312,20 @@
         return url;
       }
 
-      function fmtTime(sec) {
-        sec = Math.max(0, Math.floor(sec));
-        const m = Math.floor(sec / 60);
-        const s = sec % 60;
-        return `${m}:${String(s).padStart(2, "0")}`;
+      function renderPresence(p) {
+        const el = document.getElementById("presence");
+        if (!el) return;
+
+        const state =
+          p?.music === "listening"
+            ? "listening"
+            : (p?.roblox === "in_game" ? "in_game" : (p?.roblox === "online" ? "online" : "offline"));
+
+        el.dataset.state = state;
+        el.title =
+          state === "listening"
+            ? "Listening now"
+            : (state === "in_game" ? "In game" : (state === "online" ? "Online" : "Offline"));
       }
 
       function timeAgo(iso) {
@@ -292,70 +343,16 @@
         return `${day}d ago`;
       }
 
-      // ---------------- Typewriter ----------------
-      const typeTarget = document.getElementById("type-target");
-      const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
-      let nameIndex = 0;
-
-      const typeSpeed = 150;
-      const deleteSpeed = 95;
-      const holdTime = 4000;
-      const pauseBetween = 600;
-
-      function typeText(text, i = 0) {
-        if (!typeTarget) return;
-        if (i <= text.length) {
-          typeTarget.textContent = text.slice(0, i);
-          setTimeout(() => typeText(text, i + 1), typeSpeed);
-        } else {
-          setTimeout(() => deleteText(text, text.length), holdTime);
-        }
-      }
-
-      function deleteText(text, i) {
-        if (!typeTarget) return;
-        if (i >= 0) {
-          typeTarget.textContent = text.slice(0, i);
-          setTimeout(() => deleteText(text, i - 1), deleteSpeed);
-        } else {
-          nameIndex = (nameIndex + 1) % names.length;
-          setTimeout(() => typeText(names[nameIndex], 0), pauseBetween);
-        }
-      }
-
-      typeText(names[nameIndex], 0);
-
-      // ---------------- Endpoints ----------------
-      const FEED_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/feed";
-      const STATUS_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/api/discord/status";
-      let lastFeedSig = "";
-
-      // ---------------- Presence dot ----------------
-      function renderPresence(p) {
-        const el = document.getElementById("presence");
-        if (!el) return;
-
-        const state =
-          p?.music === "listening"
-            ? "listening"
-            : (p?.roblox === "in_game" ? "in_game" : (p?.roblox === "online" ? "online" : "offline"));
-
-        el.dataset.state = state;
-        el.title =
-          state === "listening"
-            ? "Listening now"
-            : (state === "in_game" ? "In game" : (state === "online" ? "Online" : "Offline"));
-      }
-
-      // ---------------- LIVE STATUS ----------------
       function pickLangIcon(workingOn) {
         const s = String(workingOn || "").toLowerCase();
 
-        if (s.includes("typescript") || s.includes(" ts ")) return "assets/ts.svg";
-        if (s.includes("javascript") || s.includes(" js ")) return "assets/js.svg";
-        if (s.includes("python") || s.includes(" py ")) return "assets/py.svg";
-        if (s.includes("golang") || s.includes(" go ")) return "assets/go.svg";
-        if (s.includes("java")) return "assets/java.svg";
+        // prefix style: "TypeScript - ..." / "JavaScript - ..."
+        if (s.startsWith("typescript") || s.includes("typescript")) return "assets/ts.svg";
+        if (s.startsWith("javascript") || s.includes("javascript")) return "assets/js.svg";
+
+        if (s.includes(" python") || s.startsWith("python") || s.includes("py ")) return "assets/py.svg";
+        if (s.includes("golang") || s.startsWith("go ") || s.includes(" go ")) return "assets/go.svg";
+        if (s.startsWith("java") || s.includes(" java")) return "assets/java.svg";
         if (s.includes("c#") || s.includes("csharp")) return "assets/cs.svg";
         if (s.includes("rust")) return "assets/rust.svg";
 
@@ -374,15 +371,23 @@
         if (stateEl) stateEl.textContent = safeState;
         if (workEl) workEl.textContent = workingOn || "—";
         if (updEl) updEl.textContent = updatedAt ? `Updated ${timeAgo(updatedAt)}` : "";
-
         if (card) card.dataset.state = safeState;
 
+        // icon OR photo fallback
         if (art) {
           const icon = pickLangIcon(workingOn);
-          art.style.backgroundImage = icon ? `url("${icon}")` : "none";
-          art.style.backgroundSize = "34px 34px";
+          const img = icon ? icon : FALLBACK_PHOTO;
+
+          art.style.backgroundImage = `url("${img}")`;
           art.style.backgroundRepeat = "no-repeat";
           art.style.backgroundPosition = "center";
+
+          // icons look best centered & smaller; photos look best as cover
+          if (icon) {
+            art.style.backgroundSize = "34px 34px";
+          } else {
+            art.style.backgroundSize = "cover";
+          }
         }
       }
 
@@ -394,12 +399,7 @@
             throw new Error(`HTTP ${res.status} ${t}`.slice(0, 200));
           }
           const data = await res.json();
-
-          setLiveStatus(
-            data?.state || "idle",
-            data?.workingOn || "",
-            data?.updatedAt || null
-          );
+          setLiveStatus(data?.state || "idle", data?.workingOn || "", data?.updatedAt || null);
         } catch (e) {
           console.error("[LiveStatus] failed:", e);
           setLiveStatus("offline", `Status unavailable`, null);
@@ -409,11 +409,18 @@
       updateLiveStatus();
       setInterval(updateLiveStatus, 30_000);
 
-      // ---------------- Now Listening progress ----------------
+      // MUSIC progress
       let progressTimer = null;
       let progressStartMs = 0;
       let progressDurationMs = 0;
       let progressTrackKey = "";
+
+      function fmtTime(sec) {
+        sec = Math.max(0, Math.floor(sec));
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m}:${String(s).padStart(2, "0")}`;
+      }
 
       function stopProgress() {
         const prog = document.getElementById("now-progress");
@@ -457,7 +464,6 @@
         progressTimer = setInterval(tick, 1000);
       }
 
-      // ---------------- Render cards from /feed ----------------
       function renderNowCardFromItems(items) {
         const card = document.getElementById("now-card");
         const art = document.getElementById("now-art");
@@ -595,7 +601,7 @@
         if (!document.hidden) updateFeed(true);
       });
 
-      // ---------------- Active nav highlight ----------------
+      // Active nav link highlight
       const sectionIds = ["about", "projects", "music", "activity", "contact"];
       const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
 
@@ -620,7 +626,7 @@
         if (el) observer.observe(el);
       });
 
-      // ---------------- Theme toggle ----------------
+      // Theme toggle
       const themeBtn = document.getElementById("theme-btn");
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") document.body.classList.add("dark");
@@ -633,13 +639,13 @@
         themeBtn.textContent = isDark ? "☀️" : "🌙";
       });
 
-      // ---------------- Background parallax ----------------
+      // Background parallax
       const bg = document.getElementById("bg");
-      if (bg) bg.style.backgroundImage = `url("assets/city.webp")`;
+      bg.style.backgroundImage = `url("assets/city.webp")`;
 
       window.addEventListener("mousemove", (e) => {
         const hero = document.querySelector(".hero");
-        if (!hero || !bg) return;
+        if (!hero) return;
         const r = hero.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5;
         const y = (e.clientY - r.top) / r.height - 0.5;
@@ -653,6 +659,5 @@
       src="https://static.cloudflareinsights.com/beacon.min.js"
       data-cf-beacon='{"token": "79083817cb8d4ae8bdc8ef0220b59d8e"}'
     ></script>
-    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
