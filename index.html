@@ -167,6 +167,28 @@
       <div class="wrap">
         <h2>Activity</h2>
 
+        <!-- Roblox status card (separate from activity list) -->
+<div class="now-card" id="rbx-card" hidden>
+  <div class="now-art" id="rbx-art"></div>
+
+  <div class="now-meta">
+    <div class="now-title" id="rbx-title">Roblox</div>
+    <div class="now-artist" id="rbx-sub"></div>
+  </div>
+
+  <a
+    class="now-link"
+    id="rbx-link"
+    href="#"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Open Roblox profile"
+  >
+    ↗
+  </a>
+</div>
+
+
         <!-- Skeletons -->
         <div class="activity-list" id="activity-skeleton">
           <div class="activity-item skeleton"></div>
@@ -263,37 +285,65 @@
       }
 
       function renderNowCardFromItems(items) {
-        const art = document.getElementById("now-art");
-        const title = document.getElementById("now-title");
-        const artist = document.getElementById("now-artist");
-        const link = document.getElementById("now-link");
-        const badge = document.getElementById("now-badge");
-        if (!title || !artist || !link || !badge || !art) return;
+  const art = document.getElementById("now-art");
+  const title = document.getElementById("now-title");
+  const artist = document.getElementById("now-artist");
+  const link = document.getElementById("now-link");
+  const badge = document.getElementById("now-badge");
+  if (!title || !artist || !link || !badge || !art) return;
 
-        const musicItem =
-          items.find((x) => x.type === "music_now") ||
-          items.find((x) => x.type === "music_last");
+  badge.hidden = true;
 
-        if (!musicItem) {
-          badge.hidden = true;
-          title.textContent = "Nothing playing";
-          artist.textContent = "";
-          art.style.backgroundImage = "none";
-          link.href = "https://www.last.fm/user/LxghtBlvee";
-          return;
-        }
+  const musicNow = items.find((x) => x.type === "music_now");
+  const musicLast = items.find((x) => x.type === "music_last");
 
-        const isNow = musicItem.type === "music_now";
-        badge.hidden = !isNow;
+  const musicItem = musicNow || musicLast;
 
-        title.textContent = musicItem.title || (isNow ? "Listening…" : "Last played");
-        artist.textContent = musicItem.subtitle || "";
+  if (!musicItem) {
+    title.textContent = "Nothing playing";
+    artist.textContent = "";
+    art.style.backgroundImage = "none";
+    link.href = "https://www.last.fm/user/LxghtBlvee";
+    return;
+  }
 
-        link.href = musicItem.url || "https://www.last.fm/user/LxghtBlvee";
+  const isNow = musicItem.type === "music_now";
 
-        const img = safeCssUrl(musicItem.image);
-        art.style.backgroundImage = img ? `url("${img}")` : "none";
-      }
+  if (isNow) badge.hidden = false;
+
+  title.textContent = musicItem.title || "Nothing playing";
+  artist.textContent = musicItem.subtitle || "";
+
+  link.href = musicItem.url || "https://www.last.fm/user/LxghtBlvee";
+
+  const img = safeCssUrl(musicItem.image);
+  art.style.backgroundImage = img ? `url("${img}")` : "none";
+}
+
+
+      function renderRobloxCardFromItems(items) {
+  const card = document.getElementById("rbx-card");
+  const art = document.getElementById("rbx-art");
+  const title = document.getElementById("rbx-title");
+  const sub = document.getElementById("rbx-sub");
+  const link = document.getElementById("rbx-link");
+  if (!card || !art || !title || !sub || !link) return;
+
+  const rbx = items.find((x) => x.type === "roblox");
+  if (!rbx) {
+    card.hidden = true;
+    return;
+  }
+
+  card.hidden = false;
+  title.textContent = rbx.title || "Roblox";
+  sub.textContent = rbx.subtitle || "";
+  link.href = rbx.url || "https://www.roblox.com/";
+
+  const img = safeCssUrl(rbx.image);
+  art.style.backgroundImage = img ? `url("${img}")` : "none";
+}
+
 
       function renderActivity(items) {
         const list = document.getElementById("activity-list");
@@ -344,6 +394,7 @@
 
           // only GitHub in Activity 
           const activityItems = items.filter((it) => it.type === "github");
+renderActivity(activityItems);
 
           const sig = JSON.stringify(
             items.map((i) => [i.type, i.title, i.subtitle, i.url, i.image, i.ts])
@@ -353,10 +404,11 @@
 
           renderPresence(data?.presence);
           renderNowCardFromItems(items);
+          renderRobloxCardFromItems(items);
           renderActivity(activityItems);
 
           // show list after success
-          if (skel) skel.hidden = true;
+          if (skel) skel.remove() = true;
           if (list) list.hidden = false;
           if (err) err.hidden = true;
         } catch (e) {
