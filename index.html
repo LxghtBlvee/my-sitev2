@@ -279,26 +279,23 @@
     return url;
   }
 
-  // ---------------- Presence dot ----------------
   function renderPresence(p) {
     const el = document.getElementById("presence");
     if (!el) return;
 
-    const robloxOnline = p?.roblox === "online" || p?.roblox === "in_game";
-
     const state =
       p?.music === "listening"
         ? "listening"
-        : (robloxOnline ? "online" : "offline");
+        : (p?.roblox === "in_game" ? "in_game" : (p?.roblox === "online" ? "online" : "offline"));
 
     el.dataset.state = state;
     el.title =
       state === "listening"
         ? "Listening now"
-        : (robloxOnline ? (p?.roblox === "in_game" ? "In game" : "Online") : "Offline");
+        : (state === "in_game" ? "In game" : (state === "online" ? "Online" : "Offline"));
   }
 
-  // ---------------- Now playing progress ----------------
+  // --- Music progress (best-effort timer) ---
   let progressTimer = null;
   let progressStartMs = 0;
   let progressDurationMs = 0;
@@ -311,6 +308,13 @@
     return `${m}:${String(s).padStart(2, "0")}`;
   }
 
+  function stopProgress() {
+    const prog = document.getElementById("now-progress");
+    if (prog) prog.hidden = true;
+    if (progressTimer) clearInterval(progressTimer);
+    progressTimer = null;
+  }
+
   function startProgress(durationMs, trackKey) {
     const prog = document.getElementById("now-progress");
     const fill = document.getElementById("now-fill");
@@ -318,12 +322,11 @@
     const du = document.getElementById("now-duration");
 
     if (!durationMs || durationMs <= 0 || !prog || !fill || !el || !du) {
-      if (prog) prog.hidden = true;
-      if (progressTimer) clearInterval(progressTimer);
-      progressTimer = null;
+      stopProgress();
       return;
     }
 
+    // reset if track changed
     if (trackKey && trackKey !== progressTrackKey) {
       progressTrackKey = trackKey;
       progressStartMs = Date.now();
@@ -335,16 +338,12 @@
 
     const tick = () => {
       const elapsedMs = Date.now() - progressStartMs;
-      const elapsedSec = elapsedMs / 1000;
-      el.textContent = fmtTime(elapsedSec);
-
       const pct = Math.min(100, (elapsedMs / progressDurationMs) * 100);
+
+      el.textContent = fmtTime(elapsedMs / 1000);
       fill.style.width = `${pct}%`;
 
-      if (elapsedMs >= progressDurationMs) {
-        clearInterval(progressTimer);
-        progressTimer = null;
-      }
+      if (elapsedMs >= progressDurationMs) stopProgress();
     };
 
     tick();
@@ -352,14 +351,6 @@
     progressTimer = setInterval(tick, 1000);
   }
 
-  function stopProgress() {
-    const prog = document.getElementById("now-progress");
-    if (prog) prog.hidden = true;
-    if (progressTimer) clearInterval(progressTimer);
-    progressTimer = null;
-  }
-
-  // ---------------- Now Listening card ----------------
   function renderNowCardFromItems(items) {
     const card = document.getElementById("now-card");
     const art = document.getElementById("now-art");
@@ -369,6 +360,7 @@
     const badge = document.getElementById("now-badge");
     if (!title || !artist || !link || !badge || !art) return;
 
+    // reset
     badge.hidden = true;
     card?.classList.remove("is-now");
 
@@ -387,6 +379,7 @@
 
     const isNow = musicItem.type === "music_now";
 
+    // ✅ only show green badge + glow when ACTUALLY listening now
     badge.hidden = !isNow;
     if (isNow) card?.classList.add("is-now");
 
@@ -401,7 +394,6 @@
     else stopProgress();
   }
 
-  // ---------------- Roblox card ----------------
   function renderRobloxCardFromItems(items) {
     const card = document.getElementById("rbx-card");
     const art = document.getElementById("rbx-art");
@@ -419,13 +411,14 @@
     card.hidden = false;
     title.textContent = rbx.title || "Roblox";
     sub.textContent = rbx.subtitle || "";
+
+    // ✅ if in-game and we have a placeId, link to game; otherwise profile
     link.href = rbx.url || "https://www.roblox.com/";
 
     const img = safeCssUrl(rbx.image);
     art.style.backgroundImage = img ? `url("${img}")` : "none";
   }
 
-  // ---------------- Activity list (GitHub only) ----------------
   function renderActivity(items) {
     const list = document.getElementById("activity-list");
     if (!list) return;
@@ -461,7 +454,6 @@
     }
   }
 
-  // ---------------- Update loop ----------------
   async function updateFeed(force = false) {
     const skel = document.getElementById("activity-skeleton");
     const list = document.getElementById("activity-list");
@@ -473,20 +465,20 @@
       const data = await res.json();
 
       const items = Array.isArray(data?.items) ? data.items : [];
-      const activityItems = items.filter((it) => it.type === "github");
 
-      const sig = JSON.stringify(
-        items.map((i) => [i.type, i.title, i.subtitle, i.url, i.image, i.ts, i.durationMs, i.trackKey])
-      );
+      const sig = JSON.stringify(items.map((i) => [i.type, i.title, i.subtitle, i.url, i.image, i.ts]));
       if (!force && sig === lastFeedSig) return;
       lastFeedSig = sig;
 
       renderPresence(data?.presence);
       renderNowCardFromItems(items);
       renderRobloxCardFromItems(items);
+
+      // only GitHub in Activity list
+      const activityItems = items.filter((it) => it.type === "github");
       renderActivity(activityItems);
 
-      // ✅ remove skeleton correctly (this is what you meant)
+      // ✅ THIS is the correct version of what you wanted:
       if (skel) skel.remove();
       if (list) list.hidden = false;
       if (err) err.hidden = true;
@@ -500,10 +492,11 @@
 
   updateFeed(true);
   setInterval(() => updateFeed(false), 5000);
-
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) updateFeed(true);
   });
+
+
 
   // ---------------- Active nav link highlight ----------------
   const sectionIds = ["about", "projects", "music", "activity", "contact"];
