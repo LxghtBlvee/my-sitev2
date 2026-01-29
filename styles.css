@@ -761,3 +761,31 @@ body.dark #live-status-badge {
   box-shadow: none;
 }
 
+#live-status-art {
+  background-size: 34px 34px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ===== Fix bg transition + scale typo ===== */
+.bg {
+  transform: scale(1);
+  transition: transform 1s ease, opacity 1s ease;
+}
+
+/* ===== Prevent long text overflow in cards ===== */
+.now-meta { min-width: 0; }
+
+.now-title,
+.now-artist {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Live status icon should behave like an icon (not cover art) ===== */
+#live-status-art {
+  background-size: 34px 34px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
