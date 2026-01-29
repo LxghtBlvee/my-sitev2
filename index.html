@@ -72,6 +72,33 @@
           or working on a project of mine.
         </p>
 
+        <!-- LIVE STATUS (added) -->
+        <div class="now-card" id="live-status-card">
+          <div class="now-art" id="live-status-art" style="background-image:none;"></div>
+
+          <div class="now-meta">
+            <div class="now-badge" id="live-status-badge">
+              <span class="dot"></span> <span id="live-status-state">Loading…</span>
+            </div>
+
+            <div class="now-title" id="live-status-work">Fetching status…</div>
+            <div class="now-artist" id="live-status-updated"></div>
+          </div>
+
+          <a
+            class="now-link"
+            id="live-status-link"
+            href="https://lxghtblvee-api.dickeydamian.workers.dev/api/discord/status"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open status endpoint"
+            title="Open status endpoint"
+          >
+            ↗
+          </a>
+        </div>
+        <!-- /LIVE STATUS -->
+
         <div class="pills">
           <span class="pill">TypeScript</span>
           <span class="pill">Node.js</span>
@@ -91,14 +118,14 @@
         <div class="cards">
           <article class="card">
             <div class="card-top">
-              <h3>Helix Bot Contributions</h3>
+              <h3>unnamed.games</h3>
               <div class="tags">
-                <span class="tag">NestJS</span><span class="tag">Discord.js</span><span class="tag">MongoDB</span>
+                <span class="tag">Programmer</span><span class="tag">Full-Stack</span>
               </div>
             </div>
-            <p>Infraction history improvements, safer typing, cleaner interaction flow.</p>
+            <p>Assisting in development of Helix.</p>
             <div class="card-actions">
-              <a class="btn" href="https://github.com/LxghtBlvee" target="_blank" rel="noopener noreferrer">View GitHub</a>
+              <a class="btn" href="https://github.com/ungms" target="_blank" rel="noopener noreferrer">View GitHub</a>
             </div>
           </article>
 
@@ -109,9 +136,9 @@
                 <span class="tag">Node.js</span><span class="tag">APIs</span>
               </div>
             </div>
-            <p>Backend service client work + improvements to automation tooling.</p>
+            <p>Backend service client work + improvements to automation tooling. Echelon has sense been discontinued.</p>
             <div class="card-actions">
-              <a class="btn" href="https://github.com/LxghtBlvee" target="_blank" rel="noopener noreferrer">View GitHub</a>
+              <a class="btn" href="https://github.com/LxghtBlvee/echelon" target="_blank" rel="noopener noreferrer">View GitHub</a>
             </div>
           </article>
 
@@ -149,15 +176,14 @@
           </div>
 
           <div class="now-progress" id="now-progress" hidden>
-  <div class="now-time">
-    <span id="now-elapsed">0:00</span>
-    <span id="now-duration">0:00</span>
-  </div>
-  <div class="bar">
-    <div class="fill" id="now-fill" style="width: 0%"></div>
-  </div>
-</div>
-
+            <div class="now-time">
+              <span id="now-elapsed">0:00</span>
+              <span id="now-duration">0:00</span>
+            </div>
+            <div class="bar">
+              <div class="fill" id="now-fill" style="width: 0%"></div>
+            </div>
+          </div>
 
           <a
             class="now-link"
@@ -179,26 +205,25 @@
         <h2>Activity</h2>
 
         <!-- Roblox status card (separate from activity list) -->
-<div class="now-card" id="rbx-card" hidden>
-  <div class="now-art" id="rbx-art"></div>
+        <div class="now-card" id="rbx-card" hidden>
+          <div class="now-art" id="rbx-art"></div>
 
-  <div class="now-meta">
-    <div class="now-title" id="rbx-title">Roblox</div>
-    <div class="now-artist" id="rbx-sub"></div>
-  </div>
+          <div class="now-meta">
+            <div class="now-title" id="rbx-title">Roblox</div>
+            <div class="now-artist" id="rbx-sub"></div>
+          </div>
 
-  <a
-    class="now-link"
-    id="rbx-link"
-    href="#"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="Open Roblox profile"
-  >
-    ↗
-  </a>
-</div>
-
+          <a
+            class="now-link"
+            id="rbx-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open Roblox profile"
+          >
+            ↗
+          </a>
+        </div>
 
         <!-- Skeletons -->
         <div class="activity-list" id="activity-skeleton">
@@ -228,364 +253,407 @@
     </section>
 
     <script>
-  // ---------------- Typewriter ----------------
-  const target = document.getElementById("type-target");
-  const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
-  let nameIndex = 0;
+      //  Typewriter
+      const target = document.getElementById("type-target");
+      const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
+      let nameIndex = 0;
 
-  const typeSpeed = 150;
-  const deleteSpeed = 95;
-  const holdTime = 4000;
-  const pauseBetween = 600;
+      const typeSpeed = 150;
+      const deleteSpeed = 95;
+      const holdTime = 4000;
+      const pauseBetween = 600;
 
-  function typeText(text, i = 0) {
-    if (i <= text.length) {
-      target.textContent = text.slice(0, i);
-      setTimeout(() => typeText(text, i + 1), typeSpeed);
-    } else {
-      setTimeout(() => deleteText(text, text.length), holdTime);
-    }
-  }
-
-  function deleteText(text, i) {
-    if (i >= 0) {
-      target.textContent = text.slice(0, i);
-      setTimeout(() => deleteText(text, i - 1), deleteSpeed);
-    } else {
-      nameIndex = (nameIndex + 1) % names.length;
-      setTimeout(() => typeText(names[nameIndex], 0), pauseBetween);
-    }
-  }
-
-  typeText(names[nameIndex], 0);
-
-  // ---------------- API (Feed) ----------------
-  const FEED_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/feed";
-  let lastFeedSig = "";
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    }[c]));
-  }
-
-  function safeCssUrl(url) {
-    if (!url) return "";
-    if (!/^https?:\/\//i.test(url)) return "";
-    return url;
-  }
-
-  function renderPresence(p) {
-    const el = document.getElementById("presence");
-    if (!el) return;
-
-    const state =
-      p?.music === "listening"
-        ? "listening"
-        : (p?.roblox === "in_game" ? "in_game" : (p?.roblox === "online" ? "online" : "offline"));
-
-    el.dataset.state = state;
-    el.title =
-      state === "listening"
-        ? "Listening now"
-        : (state === "in_game" ? "In game" : (state === "online" ? "Online" : "Offline"));
-  }
-
-  // --- Music progress (best-effort timer) ---
-  let progressTimer = null;
-  let progressStartMs = 0;
-  let progressDurationMs = 0;
-  let progressTrackKey = "";
-
-  function fmtTime(sec) {
-    sec = Math.max(0, Math.floor(sec));
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m}:${String(s).padStart(2, "0")}`;
-  }
-
-  function stopProgress() {
-    const prog = document.getElementById("now-progress");
-    if (prog) prog.hidden = true;
-    if (progressTimer) clearInterval(progressTimer);
-    progressTimer = null;
-  }
-
-  function startProgress(durationMs, trackKey) {
-    const prog = document.getElementById("now-progress");
-    const fill = document.getElementById("now-fill");
-    const el = document.getElementById("now-elapsed");
-    const du = document.getElementById("now-duration");
-
-    if (!durationMs || durationMs <= 0 || !prog || !fill || !el || !du) {
-      stopProgress();
-      return;
-    }
-
-    
-
-    // reset if track changed
-    if (trackKey && trackKey !== progressTrackKey) {
-      progressTrackKey = trackKey;
-      progressStartMs = Date.now();
-    }
-
-    
-
-    progressDurationMs = durationMs;
-    prog.hidden = false;
-    du.textContent = fmtTime(durationMs / 1000);
-
-    const tick = () => {
-      const elapsedMs = Date.now() - progressStartMs;
-      const pct = Math.min(100, (elapsedMs / progressDurationMs) * 100);
-
-      el.textContent = fmtTime(elapsedMs / 1000);
-      fill.style.width = `${pct}%`;
-
-      if (elapsedMs >= progressDurationMs) stopProgress();
-    };
-
-    tick();
-    if (progressTimer) clearInterval(progressTimer);
-    progressTimer = setInterval(tick, 1000);
-  }
-
-  function renderNowCardFromItems(items) {
-    const card = document.getElementById("now-card");
-    const art = document.getElementById("now-art");
-    const title = document.getElementById("now-title");
-    const artist = document.getElementById("now-artist");
-    const link = document.getElementById("now-link");
-    const badge = document.getElementById("now-badge");
-    if (!title || !artist || !link || !badge || !art) return;
-
-    // reset
-    badge.hidden = true;
-    card?.classList.remove("is-now");
-
-    const musicNow = items.find((x) => x.type === "music_now");
-    const musicLast = items.find((x) => x.type === "music_last");
-    const musicItem = musicNow || musicLast;
-
-    if (!musicItem) {
-      title.textContent = "Nothing playing";
-      artist.textContent = "";
-      art.style.backgroundImage = "none";
-      link.href = "https://www.last.fm/user/LxghtBlvee";
-      stopProgress();
-      return;
-    }
-
-    const isNow = musicItem.type === "music_now";
-
-    // ✅ only show green badge + glow when ACTUALLY listening now
-    badge.hidden = !isNow;
-    if (isNow) card?.classList.add("is-now");
-
-    title.textContent = musicItem.title || (isNow ? "Listening…" : "Last played");
-    artist.textContent = musicItem.subtitle || "";
-    link.href = musicItem.url || "https://www.last.fm/user/LxghtBlvee";
-
-    const img = safeCssUrl(musicItem.image);
-    art.style.backgroundImage = img ? `url("${img}")` : "none";
-
-    if (isNow) startProgress(musicItem.durationMs || 0, musicItem.trackKey || "");
-    else stopProgress();
-  }
-
-  function renderRobloxCardFromItems(items) {
-    const card = document.getElementById("rbx-card");
-    const art = document.getElementById("rbx-art");
-    const title = document.getElementById("rbx-title");
-    const sub = document.getElementById("rbx-sub");
-    const link = document.getElementById("rbx-link");
-    if (!card || !art || !title || !sub || !link) return;
-
-    const rbx = items.find((x) => x.type === "roblox");
-    if (!rbx) {
-      card.hidden = true;
-      return;
-    }
-
-    card.hidden = false;
-    title.textContent = rbx.title || "Roblox";
-    sub.textContent = rbx.subtitle || "";
-
-    // ✅ if in-game and we have a placeId, link to game; otherwise profile
-    link.href = rbx.url || "https://www.roblox.com/";
-
-    const img = safeCssUrl(rbx.image);
-    art.style.backgroundImage = img ? `url("${img}")` : "none";
-  }
-
-  function renderActivity(items) {
-    const list = document.getElementById("activity-list");
-    if (!list) return;
-
-    list.innerHTML = "";
-
-    if (!items.length) {
-      list.innerHTML = `<p style="opacity:.7">No recent activity.</p>`;
-      return;
-    }
-
-    for (const it of items.slice(0, 6)) {
-      const a = document.createElement("a");
-      a.className = "activity-item";
-      a.href = it.url || "#";
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-
-      const img = it.image || "assets/github.svg";
-
-      a.innerHTML = `
-        <div class="activity-left">
-          <div class="activity-img" style="background-image:url('${img}')"></div>
-          <div class="activity-text">
-            <div class="activity-title">${escapeHtml(it.title || "")}</div>
-            <div class="activity-sub">${escapeHtml(it.subtitle || "")}</div>
-          </div>
-        </div>
-        <div class="activity-arrow">↗</div>
-      `;
-
-      list.appendChild(a);
-    }
-  }
-
-  async function debugLastfm(env) {
-  const apiKey = env.LASTFM_API_KEY;
-  const username = env.LASTFM_USER || "LxghtBlvee";
-
-  if (!apiKey) {
-    return { ok: false, reason: "MISSING_LASTFM_API_KEY" };
-  }
-
-  const recentUrl =
-    `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks` +
-    `&user=${encodeURIComponent(username)}` +
-    `&api_key=${encodeURIComponent(apiKey)}` +
-    `&format=json&limit=1`;
-
-  const res = await fetch(recentUrl);
-  const text = await res.text();
-
-  if (path === "/debug/lastfm") {
-  return json(await debugLastfm(env), 200, 0);
-}
-
-
-  return {
-    ok: res.ok,
-    status: res.status,
-    username,
-    sample: text.slice(0, 500),
-  };
-}
-
-
-  async function updateFeed(force = false) {
-    const skel = document.getElementById("activity-skeleton");
-    const list = document.getElementById("activity-list");
-    const err = document.getElementById("activity-error");
-
-    try {
-      const res = await fetch(FEED_URL, { cache: "no-store" });
-      if (!res.ok) throw new Error(`Feed HTTP ${res.status}`);
-      const data = await res.json();
-
-      const items = Array.isArray(data?.items) ? data.items : [];
-
-      const sig = JSON.stringify(items.map((i) => [i.type, i.title, i.subtitle, i.url, i.image, i.ts]));
-      if (!force && sig === lastFeedSig) return;
-      lastFeedSig = sig;
-
-      renderPresence(data?.presence);
-      renderNowCardFromItems(items);
-      renderRobloxCardFromItems(items);
-
-      // only GitHub in Activity list
-      const activityItems = items.filter((it) => it.type === "github");
-      renderActivity(activityItems);
-
-      // ✅ THIS is the correct version of what you wanted:
-      if (skel) skel.remove();
-      if (list) list.hidden = false;
-      if (err) err.hidden = true;
-    } catch (e) {
-      if (err) {
-        err.hidden = false;
-        err.textContent = "Couldn't load activity right now.";
+      function typeText(text, i = 0) {
+        if (i <= text.length) {
+          target.textContent = text.slice(0, i);
+          setTimeout(() => typeText(text, i + 1), typeSpeed);
+        } else {
+          setTimeout(() => deleteText(text, text.length), holdTime);
+        }
       }
-    }
+
+      function deleteText(text, i) {
+        if (i >= 0) {
+          target.textContent = text.slice(0, i);
+          setTimeout(() => deleteText(text, i - 1), deleteSpeed);
+        } else {
+          nameIndex = (nameIndex + 1) % names.length;
+          setTimeout(() => typeText(names[nameIndex], 0), pauseBetween);
+        }
+      }
+
+      typeText(names[nameIndex], 0);
+
+      //  API (Feed)
+      const FEED_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/feed";
+      let lastFeedSig = "";
+
+      // LIVE STATUS API (added)
+      const STATUS_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/api/discord/status";
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        }[c]));
+      }
+
+      function safeCssUrl(url) {
+        if (!url) return "";
+        if (!/^https?:\/\//i.test(url)) return "";
+        return url;
+      }
+
+      function renderPresence(p) {
+        const el = document.getElementById("presence");
+        if (!el) return;
+
+        const state =
+          p?.music === "listening"
+            ? "listening"
+            : (p?.roblox === "in_game" ? "in_game" : (p?.roblox === "online" ? "online" : "offline"));
+
+        el.dataset.state = state;
+        el.title =
+          state === "listening"
+            ? "Listening now"
+            : (state === "in_game" ? "In game" : (state === "online" ? "Online" : "Offline"));
+      }
+
+      // LIVE STATUS helpers (added)
+      function timeAgo(iso) {
+        const t = new Date(iso).getTime();
+        if (!Number.isFinite(t)) return "";
+        const diff = Math.max(0, Date.now() - t);
+
+        const sec = Math.floor(diff / 1000);
+        if (sec < 60) return `${sec}s ago`;
+        const min = Math.floor(sec / 60);
+        if (min < 60) return `${min}m ago`;
+        const hr = Math.floor(min / 60);
+        if (hr < 24) return `${hr}h ago`;
+        const day = Math.floor(hr / 24);
+        return `${day}d ago`;
+      }
+
+      function pickLangIcon(workingOn) {
+  const s = String(workingOn || "").toLowerCase();
+
+  if (s.includes("typescript") || s.includes(" ts ")) return "assets/ts.svg";
+  if (s.includes("javascript") || s.includes(" js ")) return "assets/js.svg";
+  if (s.includes("python") || s.includes(" py ")) return "assets/py.svg";
+  if (s.includes("golang") || s.includes(" go ")) return "assets/go.svg";
+  if (s.includes("java")) return "assets/java.svg";
+  if (s.includes("c#") || s.includes("csharp")) return "assets/cs.svg";
+  if (s.includes("rust")) return "assets/rust.svg";
+
+  return "";
+}
+
+
+      function setLiveStatus(state, workingOn, updatedAt) {
+        const stateEl = document.getElementById("live-status-state");
+        const workEl = document.getElementById("live-status-work");
+        const updEl = document.getElementById("live-status-updated");
+        const card = document.getElementById("live-status-card");
+
+        if (stateEl) stateEl.textContent = state || "unknown";
+        if (workEl) workEl.textContent = workingOn || "—";
+        if (updEl) updEl.textContent = updatedAt ? `Updated ${timeAgo(updatedAt)}` : "";
+
+        // Optional: add a data attribute for styling in CSS if you want later
+        if (card) card.dataset.state = String(state || "unknown").toLowerCase();
+
+          if (art) {
+    const icon = pickLangIcon(workingOn);
+    art.style.backgroundImage = icon ? `url("${icon}")` : "none";
+    art.style.backgroundSize = "34px 34px";
+    art.style.backgroundRepeat = "no-repeat";
+    art.style.backgroundPosition = "center";
   }
 
-  updateFeed(true);
-  setInterval(() => updateFeed(false), 5000);
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) updateFeed(true);
-  });
+      }
 
+      async function updateLiveStatus() {
+        try {
+          const res = await fetch(STATUS_URL, { cache: "no-store" });
+          if (!res.ok) throw new Error(`Status HTTP ${res.status}`);
+          const data = await res.json();
 
+          setLiveStatus(
+            String(data?.state || "idle"),
+            String(data?.workingOn || ""),
+            data?.updatedAt || null
+          );
+        } catch (e) {
+          setLiveStatus("offline", "Status unavailable", null);
+        }
+      }
 
-  // ---------------- Active nav link highlight ----------------
-  const sectionIds = ["about", "projects", "music", "activity", "contact"];
-  const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
+      // kick it off
+      updateLiveStatus();
+      setInterval(updateLiveStatus, 30_000);
+      // /LIVE STATUS
 
-  const setActive = (id) => {
-    navLinks.forEach((a) =>
-      a.classList.toggle("active", a.getAttribute("href") === `#${id}`)
-    );
-  };
+      //  Music progress
+      let progressTimer = null;
+      let progressStartMs = 0;
+      let progressDurationMs = 0;
+      let progressTrackKey = "";
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) setActive(visible.target.id);
-    },
-    { threshold: [0.25, 0.4, 0.6] }
-  );
+      function fmtTime(sec) {
+        sec = Math.max(0, Math.floor(sec));
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m}:${String(s).padStart(2, "0")}`;
+      }
 
-  sectionIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) observer.observe(el);
-  });
+      function stopProgress() {
+        const prog = document.getElementById("now-progress");
+        if (prog) prog.hidden = true;
+        if (progressTimer) clearInterval(progressTimer);
+        progressTimer = null;
+      }
 
-  // ---------------- Theme toggle ----------------
-  const themeBtn = document.getElementById("theme-btn");
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") document.body.classList.add("dark");
-  if (themeBtn) themeBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      function startProgress(durationMs, trackKey) {
+        const prog = document.getElementById("now-progress");
+        const fill = document.getElementById("now-fill");
+        const el = document.getElementById("now-elapsed");
+        const du = document.getElementById("now-duration");
 
-  themeBtn?.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    const isDark = document.body.classList.contains("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    themeBtn.textContent = isDark ? "☀️" : "🌙";
-  });
+        if (!durationMs || durationMs <= 0 || !prog || !fill || !el || !du) {
+          stopProgress();
+          return;
+        }
 
-  // ---------------- Background parallax ----------------
-  const bg = document.getElementById("bg");
-  bg.style.backgroundImage = `url("assets/city.webp")`;
+        // reset if track changed
+        if (trackKey && trackKey !== progressTrackKey) {
+          progressTrackKey = trackKey;
+          progressStartMs = Date.now();
+        }
 
-  window.addEventListener("mousemove", (e) => {
-    const hero = document.querySelector(".hero");
-    if (!hero) return;
-    const r = hero.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    bg.style.transform = `translate(${x * 8}px, ${y * 8}px) scale(1.02)`;
-  });
-</script>
+        progressDurationMs = durationMs;
+        prog.hidden = false;
+        du.textContent = fmtTime(durationMs / 1000);
 
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3bc7b2227af240d9bf3cc6afec4ee93e"}'></script><!-- End Cloudflare Web Analytics -->
+        const tick = () => {
+          const elapsedMs = Date.now() - progressStartMs;
+          const pct = Math.min(100, (elapsedMs / progressDurationMs) * 100);
+
+          el.textContent = fmtTime(elapsedMs / 1000);
+          fill.style.width = `${pct}%`;
+
+          if (elapsedMs >= progressDurationMs) stopProgress();
+        };
+
+        tick();
+        if (progressTimer) clearInterval(progressTimer);
+        progressTimer = setInterval(tick, 1000);
+      }
+
+      function renderNowCardFromItems(items) {
+        const card = document.getElementById("now-card");
+        const art = document.getElementById("now-art");
+        const title = document.getElementById("now-title");
+        const artist = document.getElementById("now-artist");
+        const link = document.getElementById("now-link");
+        const badge = document.getElementById("now-badge");
+        if (!title || !artist || !link || !badge || !art) return;
+
+        // reset
+        badge.hidden = true;
+        card?.classList.remove("is-now");
+
+        const musicNow = items.find((x) => x.type === "music_now");
+        const musicLast = items.find((x) => x.type === "music_last");
+        const musicItem = musicNow || musicLast;
+
+        if (!musicItem) {
+          title.textContent = "Nothing playing";
+          artist.textContent = "";
+          art.style.backgroundImage = "none";
+          link.href = "https://www.last.fm/user/LxghtBlvee";
+          stopProgress();
+          return;
+        }
+
+        const isNow = musicItem.type === "music_now";
+
+        badge.hidden = !isNow;
+        if (isNow) card?.classList.add("is-now");
+
+        title.textContent = musicItem.title || (isNow ? "Listening…" : "Last played");
+        artist.textContent = musicItem.subtitle || "";
+        link.href = musicItem.url || "https://www.last.fm/user/LxghtBlvee";
+
+        const img = safeCssUrl(musicItem.image);
+        art.style.backgroundImage = img ? `url("${img}")` : "none";
+
+        if (isNow) startProgress(musicItem.durationMs || 0, musicItem.trackKey || "");
+        else stopProgress();
+      }
+
+      function renderRobloxCardFromItems(items) {
+        const card = document.getElementById("rbx-card");
+        const art = document.getElementById("rbx-art");
+        const title = document.getElementById("rbx-title");
+        const sub = document.getElementById("rbx-sub");
+        const link = document.getElementById("rbx-link");
+        if (!card || !art || !title || !sub || !link) return;
+
+        const rbx = items.find((x) => x.type === "roblox");
+        if (!rbx) {
+          card.hidden = true;
+          return;
+        }
+
+        card.hidden = false;
+        title.textContent = rbx.title || "Roblox";
+        sub.textContent = rbx.subtitle || "";
+
+        link.href = rbx.url || "https://www.roblox.com/";
+
+        const img = safeCssUrl(rbx.image);
+        art.style.backgroundImage = img ? `url("${img}")` : "none";
+      }
+
+      function renderActivity(items) {
+        const list = document.getElementById("activity-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        if (!items.length) {
+          list.innerHTML = `<p style="opacity:.7">No recent activity.</p>`;
+          return;
+        }
+
+        for (const it of items.slice(0, 6)) {
+          const a = document.createElement("a");
+          a.className = "activity-item";
+          a.href = it.url || "#";
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+
+          const img = it.image || "assets/github.svg";
+
+          a.innerHTML = `
+            <div class="activity-left">
+              <div class="activity-img" style="background-image:url('${img}')"></div>
+              <div class="activity-text">
+                <div class="activity-title">${escapeHtml(it.title || "")}</div>
+                <div class="activity-sub">${escapeHtml(it.subtitle || "")}</div>
+              </div>
+            </div>
+            <div class="activity-arrow">↗</div>
+          `;
+
+          list.appendChild(a);
+        }
+      }
+
+      async function updateFeed(force = false) {
+        const skel = document.getElementById("activity-skeleton");
+        const list = document.getElementById("activity-list");
+        const err = document.getElementById("activity-error");
+
+        try {
+          const res = await fetch(FEED_URL, { cache: "no-store" });
+          if (!res.ok) throw new Error(`Feed HTTP ${res.status}`);
+          const data = await res.json();
+
+          const items = Array.isArray(data?.items) ? data.items : [];
+
+          const sig = JSON.stringify(items.map((i) => [i.type, i.title, i.subtitle, i.url, i.image, i.ts]));
+          if (!force && sig === lastFeedSig) return;
+          lastFeedSig = sig;
+
+          renderPresence(data?.presence);
+          renderNowCardFromItems(items);
+          renderRobloxCardFromItems(items);
+
+          const activityItems = items.filter((it) => it.type === "github");
+          renderActivity(activityItems);
+
+          if (skel) skel.remove();
+          if (list) list.hidden = false;
+          if (err) err.hidden = true;
+        } catch (e) {
+          if (err) {
+            err.hidden = false;
+            err.textContent = "Couldn't load activity right now.";
+          }
+        }
+      }
+
+      updateFeed(true);
+      setInterval(() => updateFeed(false), 5000);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) updateFeed(true);
+      });
+
+      //  Active nav link highlight
+      const sectionIds = ["about", "projects", "music", "activity", "contact"];
+      const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
+
+      const setActive = (id) => {
+        navLinks.forEach((a) =>
+          a.classList.toggle("active", a.getAttribute("href") === `#${id}`)
+        );
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (visible) setActive(visible.target.id);
+        },
+        { threshold: [0.25, 0.4, 0.6] }
+      );
+
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+
+      //  Theme toggle
+      const themeBtn = document.getElementById("theme-btn");
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") document.body.classList.add("dark");
+      if (themeBtn) themeBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+
+      themeBtn?.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        themeBtn.textContent = isDark ? "☀️" : "🌙";
+      });
+
+      //  Background parallax
+      const bg = document.getElementById("bg");
+      bg.style.backgroundImage = `url("assets/city.webp")`;
+
+      window.addEventListener("mousemove", (e) => {
+        const hero = document.querySelector(".hero");
+        if (!hero) return;
+        const r = hero.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        bg.style.transform = `translate(${x * 8}px, ${y * 8}px) scale(1.02)`;
+      });
+    </script>
+
+    <!-- Cloudflare Web Analytics -->
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "79083817cb8d4ae8bdc8ef0220b59d8e"}'
+    ></script>
+    <!-- End Cloudflare Web Analytics -->
 
   </body>
 </html>
