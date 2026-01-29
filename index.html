@@ -8,7 +8,7 @@
   </head>
 
   <body>
-    <!-- Fixed theme toggle (corner) -->
+   
     <button class="theme-fab" id="theme-btn" aria-label="Toggle theme">🌙</button>
 
     <!-- NAV -->
@@ -20,6 +20,7 @@
           <a href="#about">About</a>
           <a href="#projects">Projects</a>
           <a href="#music">Music</a>
+          <a href="#activity">Activity</a>
           <a href="#contact">Contact</a>
         </nav>
       </div>
@@ -60,6 +61,9 @@
       </div>
     </main>
 
+
+    <span class="presence" id="presence" aria-label="Presence status" title="Offline">●</span>
+
     <!-- ABOUT -->
     <section class="section" id="about">
       <div class="wrap">
@@ -70,7 +74,6 @@
           or working on a project of mine.
         </p>
 
-        <!-- pills belong INSIDE the wrap -->
         <div class="pills">
           <span class="pill">TypeScript</span>
           <span class="pill">Node.js</span>
@@ -121,7 +124,7 @@
                 <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">Cloudflare</span>
               </div>
             </div>
-            <p>Hero slideshow, typewriter name, Now Listening powered by Last.fm.</p>
+            <p>Hero background, typewriter name, Now Listening powered by Last.fm.</p>
             <div class="card-actions">
               <a class="btn" href="#top">Back to top</a>
             </div>
@@ -161,6 +164,24 @@
       </div>
     </section>
 
+    <!-- ACTIVITY -->
+    <section class="section" id="activity">
+      <div class="wrap">
+        <h2>Activity</h2>
+
+  
+        <div class="activity-list" id="activity-skeleton">
+          <div class="activity-item skeleton"></div>
+          <div class="activity-item skeleton"></div>
+          <div class="activity-item skeleton"></div>
+        </div>
+
+        <div class="activity-error" id="activity-error" hidden></div>
+
+        <div class="activity-list" id="activity-list" hidden></div>
+      </div>
+    </section>
+
     <!-- CONTACT -->
     <section class="section" id="contact">
       <div class="wrap">
@@ -175,7 +196,9 @@
     </section>
 
     <script>
-      // --- Typewriter ---
+
+      // Typewriter
+
       const target = document.getElementById("type-target");
       const names = ["LxghtBlvee", "Intel_RookieAlt", "Damian"];
       let nameIndex = 0;
@@ -206,47 +229,161 @@
 
       typeText(names[nameIndex], 0);
 
-      // --- Now Playing ---
-      const NOW_PLAYING_URL = "https://lxghtblvee-now-playinga.dickeydamian.workers.dev/";
-      let lastSignature = "";
 
-      async function updateNowPlaying(force = false) {
-        try {
-          const res = await fetch(NOW_PLAYING_URL, { cache: "no-store" });
-          const song = await res.json();
+      // API (Feed)
+      const FEED_URL = "https://lxghtblvee-api.dickeydamian.workers.dev/feed";
 
-          const signature = `${song?.nowPlaying}|${song?.title}|${song?.artist}|${song?.albumArt}|${song?.url}`;
-          if (!force && signature === lastSignature) return;
-          lastSignature = signature;
+      let lastFeedSig = "";
 
-          const art = document.getElementById("now-art");
-          const title = document.getElementById("now-title");
-          const artist = document.getElementById("now-artist");
-          const link = document.getElementById("now-link");
-          const badge = document.getElementById("now-badge");
-
-          const isNow = song?.nowPlaying === true || song?.nowPlaying === "true";
-
-          badge.hidden = !isNow;
-
-          const baseTitle = song?.title || "Nothing playing";
-          title.textContent = isNow ? baseTitle : `Last played: ${baseTitle}`;
-
-          artist.textContent = song?.artist || "";
-          link.href = song?.url || "https://www.last.fm/user/LxghtBlvee";
-
-          art.style.backgroundImage = song?.albumArt ? `url("${song.albumArt}")` : "none";
-        } catch (e) {}
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        }[c]));
       }
 
-      updateNowPlaying(true);
-      setInterval(updateNowPlaying, 5000);
+      function safeCssUrl(url) {
+        if (!url) return "";
+        // basic safety: only allow http(s)
+        if (!/^https?:\/\//i.test(url)) return "";
+        return url;
+      }
+
+      function renderPresence(p) {
+        const el = document.getElementById("presence");
+        if (!el) return;
+
+        const state =
+          p?.music === "listening"
+            ? "listening"
+            : (p?.roblox === "online" ? "online" : "offline");
+
+        el.dataset.state = state;
+        el.title =
+          state === "listening"
+            ? "Listening now"
+            : (state === "online" ? "Online" : "Offline");
+      }
+
+      function renderActivity(items) {
+        const list = document.getElementById("activity-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        for (const it of items.slice(0, 6)) {
+          const a = document.createElement("a");
+          a.className = "activity-item";
+          a.href = it.url || "#";
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+
+          const img = safeCssUrl(it.image);
+
+          a.innerHTML = `
+            <div class="activity-left">
+              <div class="activity-img" ${img ? `style="background-image:url('${img}')"` : ""}></div>
+              <div class="activity-text">
+                <div class="activity-title">${escapeHtml(it.title || "")}</div>
+                <div class="activity-sub">${escapeHtml(it.subtitle || "")}</div>
+              </div>
+            </div>
+            <div class="activity-arrow">↗</div>
+          `;
+
+          list.appendChild(a);
+        }
+      }
+
+      function renderMusicFromPresence(p) {
+        const art = document.getElementById("now-art");
+        const title = document.getElementById("now-title");
+        const artist = document.getElementById("now-artist");
+        const link = document.getElementById("now-link");
+        const badge = document.getElementById("now-badge");
+        if (!title || !artist || !link || !badge || !art) return;
+
+      }
+
+      function renderNowCardFromItems(items) {
+        const art = document.getElementById("now-art");
+        const title = document.getElementById("now-title");
+        const artist = document.getElementById("now-artist");
+        const link = document.getElementById("now-link");
+        const badge = document.getElementById("now-badge");
+        if (!title || !artist || !link || !badge || !art) return;
+
+        const musicItem = items.find((x) => x.type === "music_now") || items.find((x) => x.type === "music_last");
+
+        if (!musicItem) {
+          badge.hidden = true;
+          title.textContent = "Nothing playing";
+          artist.textContent = "";
+          art.style.backgroundImage = "none";
+          link.href = "https://www.last.fm/user/LxghtBlvee";
+          return;
+        }
+
+        const isNow = musicItem.type === "music_now";
+
+        badge.hidden = !isNow;
+
+        title.textContent = isNow ? (musicItem.title || "Listening…") : (musicItem.title || "Last played");
+        artist.textContent = musicItem.subtitle || "";
+
+        link.href = musicItem.url || "https://www.last.fm/user/LxghtBlvee";
+
+        const img = safeCssUrl(musicItem.image);
+        art.style.backgroundImage = img ? `url("${img}")` : "none";
+      }
+
+      async function updateFeed(force = false) {
+        const skel = document.getElementById("activity-skeleton");
+        const list = document.getElementById("activity-list");
+        const err = document.getElementById("activity-error");
+
+        try {
+          const res = await fetch(FEED_URL, { cache: "no-store" });
+          if (!res.ok) throw new Error(`Feed HTTP ${res.status}`);
+          const data = await res.json();
+
+          const items = Array.isArray(data?.items) ? data.items : [];
+          const sig = JSON.stringify(items.map(i => [i.type, i.title, i.subtitle, i.url, i.image, i.ts]));
+
+          if (!force && sig === lastFeedSig) return;
+          lastFeedSig = sig;
+
+          renderPresence(data?.presence);
+          renderNowCardFromItems(items);
+          renderActivity(items);
+
+          // show content only on success
+          if (skel) skel.hidden = true;
+          if (list) list.hidden = false;
+          if (err) err.hidden = true;
+        } catch (e) {
+          // keep skeleton if first load fails
+          if (err) {
+            err.hidden = false;
+            err.textContent = "Couldn't load activity right now.";
+          }
+        }
+      }
+
+      updateFeed(true);
+      setInterval(() => updateFeed(false), 5000);
+
       document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) updateNowPlaying(true);
+        if (!document.hidden) updateFeed(true);
       });
 
-      // --- Active nav link highlight ---
-      const sectionIds = ["about", "projects", "music", "contact"];
+
+      // Active nav link highlight
+
+      const sectionIds = ["about", "projects", "music", "activity", "contact"];
       const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
 
       const setActive = (id) => {
@@ -270,23 +407,25 @@
         if (el) observer.observe(el);
       });
 
-      // --- Theme toggle ---
+      // Theme toggle
+
       const themeBtn = document.getElementById("theme-btn");
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") document.body.classList.add("dark");
-      themeBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      if (themeBtn) themeBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
 
-      themeBtn.addEventListener("click", () => {
+      themeBtn?.addEventListener("click", () => {
         document.body.classList.toggle("dark");
         const isDark = document.body.classList.contains("dark");
         localStorage.setItem("theme", isDark ? "dark" : "light");
         themeBtn.textContent = isDark ? "☀️" : "🌙";
       });
 
-      // --- Static Background ---
-const bg = document.getElementById("bg");
-bg.style.backgroundImage = `url("assets/city.webp")`;
 
+      // Static Background + parallax
+
+      const bg = document.getElementById("bg");
+      bg.style.backgroundImage = `url("assets/city.webp")`;
 
       window.addEventListener("mousemove", (e) => {
         const hero = document.querySelector(".hero");
